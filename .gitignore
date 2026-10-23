@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+private-data/
+local-runs/
+.env
+.env.*
+catboost_info/
+*.pkl
+*.joblib

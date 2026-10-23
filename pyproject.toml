@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "market-making-lab"
+version = "0.1.0"
+description = "Independent shared-path market-making and inventory-risk simulation"
+requires-python = ">=3.12,<3.13"
+license = {file = "LICENSE"}
+dependencies = ["numpy>=2.1,<3", "pandas>=2.2,<3", "matplotlib>=3.9,<4"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[tool.setuptools.packages.find]
+include = ["market_making_lab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

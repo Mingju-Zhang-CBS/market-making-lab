@@ -1,0 +1,31 @@
+{
+  "data_kind": "simulated",
+  "schema_version": "research-studio-run-v1",
+  "configuration": {
+    "paths": 1000,
+    "steps": 100,
+    "seed": 20261023,
+    "initial_cash": 100.0,
+    "inventory_limit": 20,
+    "fee_per_contract": 0.001,
+    "half_spread": 0.02,
+    "inventory_coefficient": 0.02,
+    "uncertainty_coefficient": 0.02,
+    "tick": 0.01
+  },
+  "shared_path_sha256": "3134720eab050b151672d58e759b4d064d5de1492c2581a15c4a1f1db7dcb335",
+  "source_sha256": {
+    "__init__.py": "b5ea0086897a284c06c75914bf4c94b29c320511c173bf00a405e6f9f24307c9",
+    "__main__.py": "714f570855e2544c59bf30d232fbc71d8984bb6c4776d3fe4356b1b74522063c",
+    "core.py": "cf325587c84b3564c20cb32af02b79f977e4247d3e272e4ead69f77be21d3634"
+  },
+  "environment": {
+    "platform": "Windows",
+    "python": "3.12.6",
+    "dependencies": {
+      "numpy": "2.1.2",
+      "pandas": "2.2.3",
+      "matplotlib": "3.9.2"
+    }
+  }
+}
