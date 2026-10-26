@@ -1,0 +1,37 @@
+{
+  "protocol_sha256": "e77c9fc98671927d7bbb9bb5fe4d2d188900d97bbb01c67881a0251a0db41a30",
+  "shared_paths_sha256": {
+    "20261026": "f2912e0a0275deec8630de8610b1bc15daca1d3e9aea452ea17b657686326cb5",
+    "20261027": "c61635b8f8ef1d84aa8f1cb61c9b3a05f807c6ab1345de0fcb8f88e76805f115",
+    "20261028": "7b9befe543eb3b1fa53be0ecbd40637c083eb8b76af531c0eb12690519ddd687"
+  },
+  "source_sha256": {
+    "core.py": "241a0eb536fb946f80c9e1a985cef9a4ce0712f1484c6e567c6ef9903f0e69eb",
+    "demand_study.py": "49ecfbae592d7c24d032ce5d75c5d7109cd13df8d792d78aea6f48e696397487",
+    "__init__.py": "b5ea0086897a284c06c75914bf4c94b29c320511c173bf00a405e6f9f24307c9",
+    "__main__.py": "8c3288578f5c5ca4c587119355aaf13ae4e4b5d0f9ce4a9d41905de6f03fa964"
+  },
+  "python": "3.12.6",
+  "config": {
+    "paths": 1000,
+    "steps": 100,
+    "seed": 20261023,
+    "initial_cash": 100.0,
+    "inventory_limit": 20,
+    "fee_per_contract": 0.001,
+    "half_spread": 0.02,
+    "inventory_coefficient": 0.02,
+    "uncertainty_coefficient": 0.02,
+    "tick": 0.01
+  },
+  "outputs_sha256": {
+    "comparison.csv": "71e5f71553ab259d8263a22ded9df63b28faf91464b8463cef7c6e515e29fa73",
+    "demand_tradeoff.png": "c39714e1f254c65b058861f429b4d7e1cd68a9227c27ee66e5bee0845bd9fc8e",
+    "metrics.json": "b020c9d0b9cd3fafe5455e15b173e2794eda8d3d0c5f88c0b2ac1705f4f4f8e3",
+    "paired_intervals.csv": "e0d56f767c7b2c7ee5f7a7f599c9492bd15ca3d4f8e2c50d8626b3038730434b",
+    "paired_policy_differences.png": "761ff51c037cdcbbd68b058727784fca95a3a3154eb7bab1f52463b2a7993deb",
+    "protocol.json": "e77c9fc98671927d7bbb9bb5fe4d2d188900d97bbb01c67881a0251a0db41a30",
+    "REPORT.md": "1a7e7aa2f3cf176cc9223ba45e69f04652169351fae9dcf24c7c3a16af74457b",
+    "sample_ledgers.csv": "ba5ee84e58b26d7d4611798f563e09aee440499722b6b09707b532776eb557b6"
+  }
+}

@@ -1,6 +1,6 @@
 # Provenance and contribution boundaries
 
-This is a new, independently written portfolio implementation prepared for Mingju Zhang. Development, test design and documentation were AI-assisted. The account owner should review, understand and be able to defend the implementation before presenting it in interviews or using the supplied resume drafts.
+This is a new public-method implementation. Mingju Zhang selected the portfolio direction and research questions. Code, experiment design, tests and documentation were developed with AI assistance. Recorded automated execution is evidence of program behavior; individual authorship and human review are tracked separately in the private contribution ledger. The Akuna competition experience and these simulated results are separate evidence.
 
 ## Included work
 

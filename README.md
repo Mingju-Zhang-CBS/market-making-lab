@@ -8,11 +8,31 @@
 
 **Question:** How do conditional value, inventory, collateral and informed order flow interact in a fully inspectable maker account?
 
-I implemented an independent finite-state binary-contract market, analytical dynamic-programming values, three predeclared quote policies and explicit trade-to-settlement accounting. The project connects mathematical pricing with model risk: every attractive simulation result depends on an assumed customer process.
+The study implements an independent finite-state binary-contract market, analytical dynamic-programming values, three predeclared quote policies and explicit trade-to-settlement accounting. The project connects mathematical pricing with model risk: every attractive simulation result depends on an assumed customer process.
 
 This work is motivated by my interest in trading and market making, including the Akuna Capital 2026 Virtual Quant Trading Challenge. Its environment, implementation and results are newly constructed; original contest questions, interfaces, opponent code and hidden evaluation are outside this repository.
 
-## Read the recorded result first
+## Price-sensitive demand
+
+The expanded study reports **108 predetermined scenarios**: three policies, three informed-flow fractions, three reservation widths plus the legacy inelastic case, and three independent seeds. Every scenario uses 1,000 shared paths of 100 steps. Quote coefficients are unchanged.
+
+In the predetermined primary-seed, 25%-informed, width-0.04 case:
+
+|Policy|Mean simulated P&L|Fill rate|Worst-5% loss CVaR|
+|---|---:|---:|---:|
+|Fixed spread|0.0473|22.31%|3.9489|
+|Inventory skew|0.0243|22.20%|2.7769|
+|Inventory + uncertainty|-0.1157|11.75%|2.2909|
+
+The wider policy earns more capture per accepted fill but loses uninformed demand and receives worse markouts. Its original inelastic-demand mean-P&L ranking reverses in this scenario. These are assumed customer distributions, not market-calibrated results. All seeds, environments, paired intervals and accounting diagnostics remain in the [executed report](reports/demand/REPORT.md).
+
+![Demand, fills and P&L](reports/demand/demand_tradeoff.png)
+
+```bash
+python -m market_making_lab --demand-study --output local-runs/demand
+```
+
+## Legacy inelastic-demand baseline
 
 The study compares three policies across 0%, 25% and 50% informed flow using **1,000 shared paths and 100 steps**, producing **nine cases and 9,000 terminal account outcomes**. All policies use the same initial cash, inventory cap and fee.
 
@@ -103,8 +123,7 @@ There is one potential customer per step, no queue, no price-sensitive noise dem
 - [Methods and contracts](docs/METHODS.md): precise inputs, conventions and limits.
 - [Worked walkthrough](docs/WALKTHROUGH.md): follow a numerical example and the implementation.
 - [Executed report](reports/demo/REPORT.md): inspect the complete recorded experiment.
-- [Interview discussion](docs/INTERVIEW.md): decisions, failure modes and questions to defend.
-- [Resume evidence](docs/RESUME.md): claims traceable to generated artifacts.
+- [Technical discussion](docs/DISCUSSION.md): decisions, failure modes and questions to defend.
 - [Provenance](docs/PROVENANCE.md): authorship boundaries, public references and data rights.
 
-Development and documentation were AI-assisted. The new implementation is a public-method demonstration prepared for Mingju Zhang. Original academic, employer and recruitment files are outside the distribution. The [MIT license](LICENSE) applies to newly authored code; dependency and external-data rights remain separate.
+Research direction was selected by Mingju Zhang. Implementation, experiments, tests and documentation were AI-assisted; [provenance](docs/PROVENANCE.md) distinguishes public methods and competition experience. The [MIT license](LICENSE) applies to new code; dependency and data rights remain separate.

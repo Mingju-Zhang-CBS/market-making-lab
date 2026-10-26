@@ -27,6 +27,9 @@ class Config:
     uncertainty_coefficient: float = .02
     tick: float = .01
 
+    def __post_init__(self):
+        self.validate()
+
     def validate(self):
         for name, minimum in [("paths", 2), ("steps", 1), ("inventory_limit", 1)]:
             value = getattr(self, name)
@@ -62,7 +65,6 @@ def fair_values(steps=100):
 
 
 def shared_paths(config):
-    config.validate()
     rng = np.random.default_rng(config.seed)
     uniforms = rng.random((config.paths, config.steps))
     moves = np.where(uniforms < .48, -1, np.where(uniforms < .52, 0, 1))
@@ -70,11 +72,11 @@ def shared_paths(config):
     for step in range(config.steps):
         states[:, step + 1] = np.clip(states[:, step] + moves[:, step], -5, 5)
     return {"states": states, "informed_uniform": rng.random((config.paths, config.steps)),
-            "noise_buy": rng.random((config.paths, config.steps)) < .5}
+            "noise_buy": rng.random((config.paths, config.steps)) < .5,
+            "reservation_uniform": rng.random((config.paths, config.steps))}
 
 
 def quotes(fair, inventory, policy, config):
-    config.validate()
     if policy not in {"fixed_spread", "inventory_skew", "inventory_uncertainty"}:
         raise ValueError("Unknown policy")
     fair, inventory = np.broadcast_arrays(np.asarray(fair, dtype=float), np.asarray(inventory, dtype=float))
@@ -94,7 +96,6 @@ def quotes(fair, inventory, policy, config):
 
 def execute(cash, inventory, delta, price, config):
     """delta is maker inventory change. Require fully collateralized unit contracts."""
-    config.validate()
     cash, inventory, delta, price = np.broadcast_arrays(np.asarray(cash, float), np.asarray(inventory, float), np.asarray(delta), np.asarray(price, float))
     if not np.isfinite(cash).all() or not np.isfinite(price).all() or not np.isfinite(delta).all() or not np.isfinite(inventory).all() or (inventory != np.floor(inventory)).any() or (np.abs(inventory) > config.inventory_limit).any() or (cash + np.minimum(inventory, 0) < -1e-12).any() or not np.isin(delta, [-1, 0, 1]).all() or ((price < 0) | (price > 1)).any():
         raise ValueError("Valid finite unit fill inputs required")
@@ -107,10 +108,22 @@ def execute(cash, inventory, delta, price, config):
     return cash - actual_delta * price - np.abs(actual_delta) * config.fee_per_contract, inventory + actual_delta, actual_delta
 
 
-def simulate(config, paths, policy, informed_fraction):
-    config.validate()
+def customer_demand(fair, bid, ask, buy, uniform, width):
+    fair, bid, ask, buy, uniform = np.broadcast_arrays(fair, bid, ask, buy, uniform)
+    reservation = fair + width * (2 * uniform - 1)
+    return np.where(buy & (reservation >= ask), -1,
+                    np.where(~buy & (reservation <= bid), 1, 0))
+
+
+def simulate(config, paths, policy, informed_fraction, *, demand="inelastic", reservation_width=.04):
     if not np.isfinite(informed_fraction) or not 0 <= informed_fraction <= 1:
         raise ValueError("Informed fraction must be in [0,1]")
+    if demand not in {"inelastic", "reservation"}:
+        raise ValueError("Unknown demand model")
+    if demand == "reservation":
+        reservation = np.asarray(paths.get("reservation_uniform"))
+        if reservation.shape != (config.paths, config.steps) or not np.isfinite(reservation).all() or ((reservation < 0) | (reservation >= 1)).any() or not np.isfinite(reservation_width) or reservation_width <= 0:
+            raise ValueError("Shared reservation draws in [0,1) and positive width required")
     states = np.asarray(paths["states"])
     if states.shape != (config.paths, config.steps + 1) or not np.issubdtype(states.dtype, np.integer) or (np.abs(states) > 5).any() or (states[:, 0] != 0).any() or (np.abs(np.diff(states, axis=1)) > 1).any():
         raise ValueError("State array inconsistent with configuration")
@@ -131,6 +144,7 @@ def simulate(config, paths, policy, informed_fraction):
     min_surplus = np.full(config.paths, config.initial_cash)
     max_bridge = 0.
     sample = []
+    requests = np.zeros(config.paths, dtype=int)
     for step in range(config.steps):
         fair = values[config.steps - step, states[:, step] + 5]
         # The maker quotes before the next state; informed takers see that state.
@@ -138,7 +152,10 @@ def simulate(config, paths, policy, informed_fraction):
         bid, ask = quotes(fair, inventory, policy, config)
         informed = flow[:, step] < informed_fraction
         informed_delta = np.where(next_fair > ask, -1, np.where(next_fair < bid, 1, 0))
-        proposed_delta = np.where(informed, informed_delta, np.where(noise[:, step], -1, 1))
+        noise_delta = np.where(noise[:, step], -1, 1) if demand == "inelastic" else customer_demand(
+            fair, bid, ask, noise[:, step], reservation[:, step], reservation_width)
+        proposed_delta = np.where(informed, informed_delta, noise_delta)
+        requests += np.abs(proposed_delta)
         price = np.where(proposed_delta > 0, bid, ask)
         old_cash, old_inventory = cash.copy(), inventory.copy()
         cash, inventory, delta = execute(cash, inventory, proposed_delta, price, config)
@@ -171,10 +188,14 @@ def simulate(config, paths, policy, informed_fraction):
     count = max(1, int(np.ceil(config.paths * .05)))
     low_tail = np.sort(pnl)[:count]
     results = pd.DataFrame({"path": np.arange(config.paths), "pnl": pnl, "terminal_cash": terminal, "inventory_at_settlement": inventory,
-                            "payoff": payoff, "fills": trades, "fees": fees, "peak_abs_inventory": peak_inventory,
+                            "payoff": payoff, "fills": trades, "requests": requests, "fees": fees, "peak_abs_inventory": peak_inventory,
                             "mean_abs_inventory": inventory_sum / config.steps, "maker_markout_sum": markout_total,
                             "spread_capture": spread_capture, "inventory_mark_pnl": price_mark, "min_collateral_surplus": min_surplus})
     summary = {"policy": policy, "informed_fraction": float(informed_fraction), "mean_pnl": float(pnl.mean()),
+               "demand": demand, "reservation_width": reservation_width if demand == "reservation" else None,
+               "fill_rate": float(trades.sum() / (config.paths * config.steps)),
+               "risk_rejection_rate": float((requests - trades).sum() / max(1, requests.sum())),
+               "spread_capture_per_fill": float(spread_capture.sum() / trades.sum()) if trades.sum() else None,
                "std_pnl": float(pnl.std(ddof=1)), "pnl_5pct_quantile": float(np.quantile(pnl, .05)),
                "worst_5pct_mean_pnl": float(low_tail.mean()), "loss_cvar_5pct": float(-low_tail.mean()),
                "mean_fills": float(trades.mean()), "mean_fees": float(fees.mean()),
@@ -199,7 +220,6 @@ def monte_carlo_value(steps=100, paths=100000, seed=9182):
 
 def run_demo(output, config=None):
     config = config or Config()
-    config.validate()
     output = Path(output)
     if output.exists() and any(output.iterdir()):
         raise ValueError("Use a new or empty output directory")

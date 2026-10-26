@@ -16,8 +16,9 @@
   "shared_path_sha256": "3134720eab050b151672d58e759b4d064d5de1492c2581a15c4a1f1db7dcb335",
   "source_sha256": {
     "__init__.py": "b5ea0086897a284c06c75914bf4c94b29c320511c173bf00a405e6f9f24307c9",
-    "__main__.py": "714f570855e2544c59bf30d232fbc71d8984bb6c4776d3fe4356b1b74522063c",
-    "core.py": "cf325587c84b3564c20cb32af02b79f977e4247d3e272e4ead69f77be21d3634"
+    "__main__.py": "8c3288578f5c5ca4c587119355aaf13ae4e4b5d0f9ce4a9d41905de6f03fa964",
+    "core.py": "241a0eb536fb946f80c9e1a985cef9a4ce0712f1484c6e567c6ef9903f0e69eb",
+    "demand_study.py": "49ecfbae592d7c24d032ce5d75c5d7109cd13df8d792d78aea6f48e696397487"
   },
   "environment": {
     "platform": "Windows",

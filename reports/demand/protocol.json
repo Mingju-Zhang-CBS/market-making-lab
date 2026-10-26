@@ -1,0 +1,18 @@
+{
+  "study": "price-sensitive-demand-v1",
+  "data_kind": "simulated",
+  "declared_before_execution": "2026-10-26",
+  "seeds": [20261026, 20261027, 20261028],
+  "paths_per_seed": 1000,
+  "steps": 100,
+  "informed_fractions": [0.0, 0.25, 0.5],
+  "reservation_half_widths": [0.01, 0.04, 0.10],
+  "reservation_distribution": "Uniform(fair-width, fair+width), no truncation: heterogeneous customer surplus may exceed payout bounds",
+  "side_probability": 0.5,
+  "policies": ["fixed_spread", "inventory_skew", "inventory_uncertainty"],
+  "primary_comparison": "paired policy minus fixed_spread within seed, width and informed fraction",
+  "inference": "percentile bootstrap of shared independent path differences, 2000 draws; pointwise intervals, no familywise significance claim",
+  "bootstrap_seed": 8675309,
+  "quote_parameters": "unchanged Config defaults from legacy study",
+  "limits": "assumed reservation-price heterogeneity; no calibration to market data or real queue"
+}

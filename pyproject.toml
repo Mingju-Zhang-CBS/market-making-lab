@@ -16,6 +16,9 @@ test = ["pytest>=8,<10"]
 [tool.setuptools.packages.find]
 include = ["market_making_lab*"]
 
+[tool.setuptools.package-data]
+market_making_lab = ["demand_protocol.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

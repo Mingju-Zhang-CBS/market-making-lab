@@ -1,0 +1,41 @@
+{
+  "data_kind": "simulated",
+  "scenarios": 108,
+  "seeds": [
+    20261026,
+    20261027,
+    20261028
+  ],
+  "primary_middle_scenario": [
+    {
+      "policy": "fixed_spread",
+      "mean_pnl": 0.047313,
+      "fill_rate": 0.22307,
+      "loss_cvar_5pct": 3.94888,
+      "mean_abs_inventory": 2.11512,
+      "spread_capture_per_fill": 0.0240349654,
+      "maker_markout_per_fill": 0.0008142144
+    },
+    {
+      "policy": "inventory_skew",
+      "mean_pnl": 0.024321,
+      "fill_rate": 0.22199,
+      "loss_cvar_5pct": 2.77688,
+      "mean_abs_inventory": 1.61259,
+      "spread_capture_per_fill": 0.0238261677,
+      "maker_markout_per_fill": 0.0004121775
+    },
+    {
+      "policy": "inventory_uncertainty",
+      "mean_pnl": -0.11572,
+      "fill_rate": 0.1175,
+      "loss_cvar_5pct": 2.29092,
+      "mean_abs_inventory": 0.9858,
+      "spread_capture_per_fill": 0.0316669039,
+      "maker_markout_per_fill": -0.0088388403
+    }
+  ],
+  "elapsed_seconds": 5.3202801999868825,
+  "max_bridge_error": 2.6645352591003757e-14,
+  "max_attribution_error": 6.714628852932947e-13
+}
